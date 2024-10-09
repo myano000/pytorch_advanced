@@ -2,7 +2,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import time
 
 class PSPNet(nn.Module):
     def __init__(self, n_classes):
@@ -38,14 +38,10 @@ class PSPNet(nn.Module):
         x = self.feature_res_1(x)
         x = self.feature_res_2(x)
         x = self.feature_dilated_res_1(x)
-
-        output_aux = self.aux(x)  # Featureモジュールの途中をAuxモジュールへ
-
+        output_aux = self.aux(x)  # Featureモジュールの途中をAuxモジュール
         x = self.feature_dilated_res_2(x)
-
         x = self.pyramid_pooling(x)
         output = self.decode_feature(x)
-
         return (output, output_aux)
 
 
