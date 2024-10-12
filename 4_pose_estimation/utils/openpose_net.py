@@ -99,7 +99,8 @@ class OpenPose_Feature(nn.Module):
 
         # VGG-19の最初10個の畳み込みを使用
         # 初めて実行する際は、モデルの重みパラメータをダウンロードするため、実行に時間がかかる
-        vgg19 = torchvision.models.vgg19(pretrained=True)
+        #vgg19 = torchvision.models.vgg19(pretrained=True)
+        vgg19 = torchvision.models.vgg19(weights=torchvision.models.VGG19_Weights.DEFAULT)
         model = {}
         model['block0'] = vgg19.features[0:23]  # VGG19の最初の10個の畳み込み層まで
 

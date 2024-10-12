@@ -2,7 +2,6 @@
 import os.path as osp
 from PIL import Image
 import torch.utils.data as data
-
 from utils.data_augumentation import Compose, Scale, RandomRotation, RandomMirror, Resize, Normalize_Tensor
 
 
@@ -126,6 +125,7 @@ class VOCDataset(data.Dataset):
         '''
         前処理をした画像のTensor形式のデータとアノテーションを取得
         '''
+
         img, anno_class_img = self.pull_item(index)
         return img, anno_class_img
 
