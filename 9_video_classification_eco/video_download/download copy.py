@@ -93,35 +93,36 @@ def download_clip(video_identifier, output_filename,
                '-f', 'mp4',
                '-o', '"%s"' % tmp_filename,
                '"%s"' % (url_base + video_identifier)]
-    with YoutubeDL() as ydl:
-        result = ydl.download(['youtube-dl',
-               '--quiet', '--no-warnings',
-               '-f', 'mp4',
-               '-o', '"%s"' % tmp_filename,
-               '"%s"' % (url_base + video_identifier)])
-    command = ' '.join(command)
+    tmp_fi = '%s' % tmp_filename
+    options = {
+        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
+        'outtmpl': tmp_fi, # 出力ファイル名のテンプレート,    
+        'cookies': '/workspace/chromewebstore.google.com_cookies.txt', # 出力ファイル名のテンプレート,    
+    }
+
+    #command = ' '.join(command)
     attempts = 0
-    
-    print(tmp_filename)
-    
+
     while True:
         try:
-            output = subprocess.check_output(command, shell=True,
-                                             stderr=subprocess.STDOUT)
+            #output = subprocess.check_output(command, shell=True,
+            #                                 stderr=subprocess.STDOUT)
+            with YoutubeDL(options) as ydl:
+                ydl.download([(url_base + video_identifier)])
         except subprocess.CalledProcessError as err:
             attempts += 1
             if attempts == num_attempts:
                 return status, err.output
         else:
             break
-    
+
     tmp_filename = glob.glob('%s*' % tmp_filename.split('.')[0])[0]
     # Construct command to trim the videos (ffmpeg required).
     command = ['ffmpeg',
                '-i', '"%s"' % tmp_filename,
                '-ss', str(start_time),
                '-t', str(end_time - start_time),
-               '-c:v', 'libx264', '-c:a', 'copy',
+               '-c:v', 'libx264', '-c', 'copy',
                '-threads', '1',
                '-loglevel', 'panic',
                '"%s"' % output_filename]
@@ -145,14 +146,11 @@ def download_clip_wrapper(row, label_to_dir, trim_format, tmp_dir):
     clip_id = os.path.basename(output_filename).split('.mp4')[0]
     if os.path.exists(output_filename):
         status = tuple([clip_id, True, 'Exists'])
-        print(output_filename)
         return status
 
-    print(row['video-id'])
     downloaded, log = download_clip(row['video-id'], output_filename,
                                     row['start-time'], row['end-time'],
                                     tmp_dir=tmp_dir)
-    print(log)
     status = tuple([clip_id, downloaded, log])
     return status
 
