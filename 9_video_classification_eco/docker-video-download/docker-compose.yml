@@ -1,0 +1,19 @@
+services:
+  python2.7:
+    restart: always
+    build: .
+    user: root
+    ports:
+      - "5555:5555"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - "/mnt/c/Dev:/workspace"
+    container_name: python2.7-container
+    command: /bin/bash -c "apt-get update && cd /workspace && /bin/bash"
+    tty: true
