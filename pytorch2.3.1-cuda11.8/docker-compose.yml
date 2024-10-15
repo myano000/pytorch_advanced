@@ -1,0 +1,18 @@
+services:
+  pytorch-2.3.1-cuda11.8:
+    image: myano000/pytorch:2.3.1cuda11.8
+    user: root
+    ports:
+      - "6666:6666"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - "/mnt/c/Dev:/workspace"
+    container_name: pytorch-2.3.1-cuda11.8-container_
+    command: /bin/bash -c "apt-get update && cd /workspace && /bin/bash"
+    tty: true
